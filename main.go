@@ -1,0 +1,98 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/jmoiron/sqlx"
+
+	"github.com/Abhyuday04/wyp/handlers"
+	"github.com/Abhyuday04/wyp/internal/app"
+	repositoryuser "github.com/Abhyuday04/wyp/layers/repository/users"
+	"github.com/Abhyuday04/wyp/layers/services"
+	"github.com/Abhyuday04/wyp/layers/transport"
+	_ "github.com/lib/pq"
+)
+
+// TODO move to config file and refactor
+const (
+	user     = "postgres.xqjolmvnjxhlktqvjtrs"
+	password = "12345678"
+	host     = "aws-0-ap-south-1.pooler.supabase.com"
+	port_db  = 6543
+	dbname   = "postgres"
+)
+
+var db *sqlx.DB
+
+func main() {
+	// Get port from environment or use default
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
+
+	// Initialize router
+	router := handlers.NewRouter()
+
+	// make server provider 
+	makeServerProvider()
+
+	// Create server
+	server := &http.Server{
+		Addr:         ":" + port,
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  120 * time.Second,
+	}
+
+	// Start server in a goroutine
+	go func() {
+		fmt.Printf("Server starting on port %s...\n", port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Error starting server: %v", err)
+		}
+	}()
+
+	// refactor
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port_db, user, password, dbname)
+	db, err := sqlx.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Successfully connected!")
+
+	// Wait for interrupt signal to gracefully shut down the server
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	fmt.Println("Server shutting down...")
+}
+
+
+func makeServerProvider() {
+	repositoryUser := repositoryuser.New(db)
+	services := services.New(repositoryUser)
+	transport := transport.New(services)
+	app.Srv = app.Server{
+		Service:        services,
+		Transport:      transport,
+		RepositoryUser: repositoryUser,
+	}
+}
