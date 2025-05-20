@@ -28,8 +28,8 @@ const (
 	dbname   = "postgres"
 )
 
-var db *sqlx.DB
 
+var db *sqlx.DB
 func main() {
 	// Get port from environment or use default
 	port := os.Getenv("PORT")
@@ -37,11 +37,29 @@ func main() {
 		port = "8000"
 	}
 
+	// refactor
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port_db, user, password, dbname)
+	var err error
+	db, err = sqlx.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Successfully connected!")
+
+	// make server provider
+	makeServerProvider()
+
 	// Initialize router
 	router := handlers.NewRouter()
-
-	// make server provider 
-	makeServerProvider()
 
 	// Create server
 	server := &http.Server{
@@ -60,22 +78,7 @@ func main() {
 		}
 	}()
 
-	// refactor
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port_db, user, password, dbname)
-	db, err := sqlx.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Successfully connected!")
+	
 
 	// Wait for interrupt signal to gracefully shut down the server
 	quit := make(chan os.Signal, 1)
@@ -84,7 +87,6 @@ func main() {
 
 	fmt.Println("Server shutting down...")
 }
-
 
 func makeServerProvider() {
 	repositoryUser := repositoryuser.New(db)
