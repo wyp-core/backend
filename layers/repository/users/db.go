@@ -2,16 +2,16 @@ package repositoryuser
 
 import (
 	"fmt"
-
 	"github.com/Abhyuday04/wyp/layers/models"
-	"github.com/jmoiron/sqlx"
+	"gorm.io/gorm"
+	"github.com/rs/zerolog/log"
 )
 
 type UserRepository struct {
-	DatabaseClient *sqlx.DB
+	DatabaseClient *gorm.DB
 }
 
-func New(db *sqlx.DB) *UserRepository {
+func New(db *gorm.DB) *UserRepository {
 	return &UserRepository{
 		DatabaseClient: db,
 	}
@@ -19,34 +19,22 @@ func New(db *sqlx.DB) *UserRepository {
 
 // AddUser adds a new user to the database
 func (r *UserRepository) AddUser(fetchParams *models.AddUserFetchParam) (*models.AddUserRespParams, error) {
-	query := `
-		INSERT INTO users (name, phone, country_code, age, gender)
-		VALUES ($1, $2, $3, $4, $5)
-	`
 	var response models.AddUserRespParams
 	fmt.Print(fetchParams)
-	// Execute query and scan the returned user_id directly into the response struct
-	// err := r.DatabaseClient.QueryRow(
-	// 	query,
-	// 	fetchParams.Name,
-	// 	fetchParams.Phone,
-	// 	fetchParams.CountryCode,
-	// 	fetchParams.Age,
-	// 	fetchParams.Gender,
-	// ).Scan(&response.UserID)
-
-	fmt.Println("CHECKING DB CLIENT IN REPO:", r)
-
-	_, err := r.DatabaseClient.Exec(query, fetchParams.Name, fetchParams.Phone, fetchParams.CountryCode, fetchParams.Age, fetchParams.Gender)
-	if err != nil {
-		return &models.AddUserRespParams{}, fmt.Errorf("failed to insert user: %w", err)
+	user := models.User{
+		Name:        fetchParams.Name,
+		Phone:       fetchParams.Phone,
+		CountryCode: fetchParams.CountryCode,
+		Age:         fetchParams.Age,
+		Gender:      fetchParams.Gender,
 	}
-	// fmt.Println("User ID:", userID)
-
-	// Set token field (if needed, replace with your token generation logic)
+	result := r.DatabaseClient.Create(&user)
+	if result.Error != nil {
+		log.Error().Err(result.Error).Msg("Failed to insert user")
+		return &models.AddUserRespParams{}, fmt.Errorf("failed to insert user: %w", result.Error)
+	}
+	response.UserID = user.UserID
 	response.Token = ""
-
-	fmt.Println("User inserted successfully!")
 
 	return &response, nil
 }

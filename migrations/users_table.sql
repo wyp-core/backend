@@ -11,5 +11,6 @@ CREATE TABLE users (
     phone VARCHAR(20) NOT NULL,
     country_code VARCHAR(5) NOT NULL,
     age INTEGER NOT NULL,
-    gender gender_type NOT NULL
+    gender gender_type NOT NULL,
+    created_at TIMESTAMP 
 );

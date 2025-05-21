@@ -9,14 +9,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jmoiron/sqlx"
-
 	"github.com/Abhyuday04/wyp/handlers"
 	"github.com/Abhyuday04/wyp/internal/app"
 	repositoryuser "github.com/Abhyuday04/wyp/layers/repository/users"
 	"github.com/Abhyuday04/wyp/layers/services"
 	"github.com/Abhyuday04/wyp/layers/transport"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 // TODO move to config file and refactor
@@ -28,8 +28,8 @@ const (
 	dbname   = "postgres"
 )
 
+var db *gorm.DB
 
-var db *sqlx.DB
 func main() {
 	// Get port from environment or use default
 	port := os.Getenv("PORT")
@@ -42,16 +42,16 @@ func main() {
 		"password=%s dbname=%s sslmode=disable",
 		host, port_db, user, password, dbname)
 	var err error
-	db, err = sqlx.Open("postgres", psqlInfo)
+	db, err = gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
+	defer func() {
+		sqlDB, err := db.DB()
+		if err == nil {
+			sqlDB.Close()
+		}
+	}()
 
 	fmt.Println("Successfully connected!")
 
@@ -77,8 +77,6 @@ func main() {
 			log.Fatalf("Error starting server: %v", err)
 		}
 	}()
-
-	
 
 	// Wait for interrupt signal to gracefully shut down the server
 	quit := make(chan os.Signal, 1)
