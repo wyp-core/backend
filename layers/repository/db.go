@@ -1,4 +1,4 @@
-package repositoryuser
+package repository
 
 import (
 	"fmt"
@@ -7,18 +7,19 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type UserRepository struct {
+type Repository struct {
 	DatabaseClient *gorm.DB
 }
 
-func New(db *gorm.DB) *UserRepository {
-	return &UserRepository{
+func New(db *gorm.DB) *Repository {
+	return &Repository{
 		DatabaseClient: db,
 	}
 }
 
 // AddUser adds a new user to the database
-func (r *UserRepository) AddUser(fetchParams *models.AddUserFetchParam) (*models.AddUserRespParams, error) {
+// TODO make single struct passing
+func (r *Repository) AddUser(fetchParams *models.AddUserFetchParam) (*models.AddUserRespParams, error) {
 	var response models.AddUserRespParams
 	fmt.Print(fetchParams)
 	user := models.User{
@@ -36,5 +37,16 @@ func (r *UserRepository) AddUser(fetchParams *models.AddUserFetchParam) (*models
 	response.UserID = user.UserID
 	response.Token = ""
 
+	return &response, nil
+}
+
+func (r *Repository) AddJob(job *models.Job) (*models.AddJobRespParams, error) {
+	var response models.AddJobRespParams
+	result := r.DatabaseClient.Create(job)
+	if result.Error != nil {
+		log.Error().Err(result.Error).Msg("Failed to insert job")
+		return &models.AddJobRespParams{}, fmt.Errorf("failed to insert job: %w", result.Error)
+	}
+	response.JobID = job.JobID
 	return &response, nil
 }

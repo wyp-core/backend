@@ -11,7 +11,7 @@ import (
 
 	"github.com/Abhyuday04/wyp/handlers"
 	"github.com/Abhyuday04/wyp/internal/app"
-	repositoryuser "github.com/Abhyuday04/wyp/layers/repository/users"
+	repository "github.com/Abhyuday04/wyp/layers/repository"
 	"github.com/Abhyuday04/wyp/layers/services"
 	"github.com/Abhyuday04/wyp/layers/transport"
 	_ "github.com/lib/pq"
@@ -87,12 +87,12 @@ func main() {
 }
 
 func makeServerProvider() {
-	repositoryUser := repositoryuser.New(db)
-	services := services.New(repositoryUser)
+	repository := repository.New(db)
+	services := services.New(repository)
 	transport := transport.New(services)
 	app.Srv = app.Server{
 		Service:        services,
 		Transport:      transport,
-		RepositoryUser: repositoryUser,
+		Repository: repository,
 	}
 }

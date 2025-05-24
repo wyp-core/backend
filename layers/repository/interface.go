@@ -1,7 +1,8 @@
-package repositoryuser
+package repository
 
 import "github.com/Abhyuday04/wyp/layers/models"
 
-type IUserRepository interface {
+type IRepository interface {
 	AddUser(fetchParams *models.AddUserFetchParam) (*models.AddUserRespParams, error)
+	AddJob(job *models.Job) (*models.AddJobRespParams, error)
 }
