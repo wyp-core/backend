@@ -39,10 +39,12 @@ func main() {
 	log.Println("port", port)
 	// refactor
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-	"password=%s dbname=%s sslmode=disable prefer_simple_protocol=true",
+	"password=%s dbname=%s sslmode=disable",
 	host, port_db, user, password, dbname)
 	var err error
-	db, err = gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
+	db, err = gorm.Open(postgres.Open(psqlInfo), &gorm.Config{
+		PrepareStmt: false,
+	})
 	if err != nil {
 		panic(err)
 	}
