@@ -42,7 +42,10 @@ func main() {
 	"password=%s dbname=%s sslmode=disable",
 	host, port_db, user, password, dbname)
 	var err error
-	db, err = gorm.Open(postgres.Open(psqlInfo), &gorm.Config{
+	db, err = gorm.Open(postgres.New(postgres.Config{
+		DSN: 				psqlInfo,
+		PreferSimpleProtocol: true, // disables implicit prepared statement usage
+	}), &gorm.Config{
 		PrepareStmt: false,
 	})
 	if err != nil {
