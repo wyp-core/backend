@@ -9,5 +9,5 @@ import (
 func UserRouter(r chi.Router) {
 	r.With(
 		app.Srv.Transport.AddUserCont,
-	).Post("/addUser", responsehandler.GenericRes)
+	).Post("/", responsehandler.GenericRes)
 }

@@ -8,3 +8,13 @@ type AddUserFetchParam struct {
 	CountryCode string `json:"countryCode"`
 }
 
+type GetJobsFetchParam struct {
+	UserID   string  `json:"userId"`
+	MinPrice float64 `json:"minPrice"`
+	MaxPrice float64 `json:"maxPrice"`
+	Mode     string  `json:"mode"`
+	Radius   float64 `json:"radius"`
+	SortBy   string  `json:"sortBy"`
+	Limit    int     `json:"limit"`
+	Offset   int     `json:"offset"`
+}

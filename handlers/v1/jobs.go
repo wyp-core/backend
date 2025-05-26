@@ -10,5 +10,8 @@ import (
 func JobRouter(r chi.Router) {
 	r.With(
 		app.Srv.Transport.AddJobCont,
-	).Post("/addJob", responsehandler.GenericRes)
+	).Post("/", responsehandler.GenericRes)
+	r.With(
+		app.Srv.Transport.GetJobsCont,
+	).Post("/all", responsehandler.GenericRes)
 }

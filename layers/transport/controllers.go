@@ -59,3 +59,25 @@ func (t *Transport) AddJobCont(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func (t *Transport) GetJobsCont(next http.Handler) http.Handler{
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		decoder := json.NewDecoder(r.Body)
+		defer r.Body.Close()
+		var fetchParams models.GetJobsFetchParam
+		err := decoder.Decode(&fetchParams)
+		// TODO: Handle error properly
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
+		respParams, err := t.Service.GetJobs(&fetchParams)
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
+
+		ctx:= context.WithValue(r.Context(), "resData", respParams)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
