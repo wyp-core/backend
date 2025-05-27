@@ -1,4 +1,4 @@
-CREATE TYPE mode_type AS ENUM ('offline', 'online');
+CREATE TYPE mode_type AS ENUM ('remote', 'onsite', 'both');
 
 CREATE TABLE jobs (
     job_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -13,6 +13,6 @@ CREATE TABLE jobs (
     price DOUBLE PRECISION NOT NULL,
     category TEXT,
     mode mode_type NOT NULL,
-    veiws INTEGER DEFAULT 0,
+    views INTEGER DEFAULT 0,
     duration TEXT
 );
