@@ -25,6 +25,6 @@ type Job struct {
 	Price       float64   `json:"price" gorm:"not null"`
 	Category    string    `json:"category" gorm:"type:text"`
 	Mode        string    `json:"mode" gorm:"type:mode_type;not null"`
-	Veiws       int       `json:"veiws" gorm:"default:0"`
+	Views       int       `json:"views" gorm:"default:0"`
 	Duration    string    `json:"duration" gorm:"type:text"`
 }
