@@ -1,4 +1,4 @@
-CREATE TYPE mode_type AS ENUM ('remote', 'onsite', 'both');
+CREATE TYPE mode_type AS ENUM ('remote', 'onsite', 'hybrid');
 
 CREATE TABLE jobs (
     job_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

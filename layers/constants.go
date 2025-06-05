@@ -6,5 +6,5 @@ package constants
 const (
 	ModeRemote = "remote"
 	ModeOnsite = "onsite"
-	ModeBoth	= "both"
+	ModeHybrid	= "hybrid"
 )
