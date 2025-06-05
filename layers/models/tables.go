@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
 	UserID      string    `json:"userID" gorm:"primary_key;column:user_id;type:uuid;default:uuid_generate_v4()"`
@@ -21,10 +25,18 @@ type Job struct {
 	Lon         float64   `json:"lon" gorm:"not null"`
 	CreatedAt   time.Time `json:"createdAt" gorm:"column:created_at;autoCreateTime"`
 	UpdatedAt   time.Time `json:"updatedAt" gorm:"column:updated_at;autoUpdateTime"`
-	Is_Active   bool      `json:"isActive" gorm:"column:is_active;default:true"`
+	IsActive    bool      `json:"isActive" gorm:"column:is_active;default:true"`
 	Price       float64   `json:"price" gorm:"not null"`
 	Category    string    `json:"category" gorm:"type:text"`
 	Mode        string    `json:"mode" gorm:"type:mode_type;not null"`
 	Views       int       `json:"views" gorm:"default:0"`
 	Duration    string    `json:"duration" gorm:"type:text"`
+	GeoLocation string    `gorm:"type:geometry(POINT,4326)"`
+}
+
+func (j *Job) BeforeCreate(tx *gorm.DB) error {
+    // This runs within the same transaction as Create
+    tx.Statement.SetColumn("geo_location", 
+        gorm.Expr("ST_SetSRID(ST_MakePoint(?, ?), 4326)", j.Lon, j.Lat))
+    return nil
 }
