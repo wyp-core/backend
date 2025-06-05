@@ -15,5 +15,5 @@ CREATE TABLE jobs (
     mode mode_type NOT NULL,
     views INTEGER DEFAULT 0,
     duration TEXT,
-    geo_location GEOGRAPHY(Point, 4326) NOT NULL,
+    geo_location GEOMETRY ,
 );

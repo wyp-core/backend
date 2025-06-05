@@ -17,4 +17,6 @@ type GetJobsFetchParam struct {
 	SortBy   string  `json:"sortBy"`
 	Limit    int     `json:"limit"`
 	Offset   int     `json:"offset"`
+	Lat      float64 `json:"lat"`
+	Lon      float64 `json:"lon"`
 }
