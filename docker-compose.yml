@@ -1,7 +1,7 @@
 version: "3.8"
 services:
        redis:
-         container_name: redis-server
+         container_name: redis
          image: redis:latest
          hostname: redis
          ports:
