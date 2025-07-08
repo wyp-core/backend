@@ -40,11 +40,11 @@ func main() {
 	log.Println("port", port)
 	// refactor
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-	"password=%s dbname=%s sslmode=disable",
-	host, port_db, user, password, dbname)
+		"password=%s dbname=%s sslmode=disable",
+		host, port_db, user, password, dbname)
 	var err error
 	db, err = gorm.Open(postgres.New(postgres.Config{
-		DSN: 				psqlInfo,
+		DSN:                  psqlInfo,
 		PreferSimpleProtocol: true, // disables implicit prepared statement usage
 	}), &gorm.Config{
 		PrepareStmt: false,
@@ -53,7 +53,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(" DBSuccessfully connected!")
-	
+
 	config := redis.RedisConfig{
 		Host:         "redis",
 		Port:         "6379",
@@ -66,13 +66,13 @@ func main() {
 		ReadTimeout:  3 * time.Second,
 		WriteTimeout: 3 * time.Second,
 	}
-	
+
 	redis.RedisClient, err = redis.NewRedisClientWithPool(config)
 	if err != nil {
 		log.Fatalf("Failed to connect to Redis: %v", err)
 		panic(err)
 	}
-	
+
 	defer func() {
 		sqlDB, err := db.DB()
 		if err == nil {
@@ -117,8 +117,8 @@ func makeServerProvider() {
 	services := services.New(repository)
 	transport := transport.New(services)
 	app.Srv = app.Server{
-		Service:        services,
-		Transport:      transport,
+		Service:    services,
+		Transport:  transport,
 		Repository: repository,
 	}
 }
