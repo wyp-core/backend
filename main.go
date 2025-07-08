@@ -55,7 +55,7 @@ func main() {
 	fmt.Println(" DBSuccessfully connected!")
 	
 	config := redis.RedisConfig{
-		Host:         "localhost",
+		Host:         "redis",
 		Port:         "6379",
 		Password:     "",
 		DB:           0,
