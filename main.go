@@ -33,7 +33,7 @@ var db *gorm.DB
 
 func main() {
 	// Get port from environment or use default
-	port := os.Getenv("PORT")
+	var port string
 	if port == "" {
 		port = "8000"
 	}
