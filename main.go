@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Abhyuday04/wyp/handlers"
+	"github.com/Abhyuday04/wyp/infra/redis"
 	"github.com/Abhyuday04/wyp/internal/app"
 	repository "github.com/Abhyuday04/wyp/layers/repository"
 	"github.com/Abhyuday04/wyp/layers/services"
@@ -51,14 +52,34 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(" DBSuccessfully connected!")
+	
+	config := redis.RedisConfig{
+		Host:         "localhost",
+		Port:         "6379",
+		Password:     "",
+		DB:           0,
+		PoolSize:     10,
+		MinIdleConns: 5,
+		MaxRetries:   3,
+		DialTimeout:  5 * time.Second,
+		ReadTimeout:  3 * time.Second,
+		WriteTimeout: 3 * time.Second,
+	}
+	
+	redis.RedisClient, err = redis.NewRedisClientWithPool(config)
+	if err != nil {
+		log.Fatalf("Failed to connect to Redis: %v", err)
+		panic(err)
+	}
+	
 	defer func() {
 		sqlDB, err := db.DB()
 		if err == nil {
 			sqlDB.Close()
 		}
+		redis.RedisClient.Close()
 	}()
-
-	fmt.Println("Successfully connected!")
 
 	// make server provider
 	makeServerProvider()

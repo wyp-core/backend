@@ -9,7 +9,7 @@ import (
 )
 
 // add recovery
-func respondwithJSON(w http.ResponseWriter, _ *http.Request, code int, payload interface{}) {
+func respondwithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	response, err := json.Marshal(payload)
 	if err != nil {
 		log.Println(err)
@@ -42,6 +42,16 @@ func GenericRes(w http.ResponseWriter, r *http.Request) {
 		"error":  "",
 		"data":   resData,
 	}
-	respondwithJSON(w, r, http.StatusOK, payload)
+	respondwithJSON(w, http.StatusOK, payload)
 
+}
+
+func GenericErrRes(w http.ResponseWriter, code int, payload interface{}) {
+
+	var errJson = map[string]interface{}{
+		"status": false,
+		"error":  payload,
+		"data":   nil,
+	}
+	respondwithJSON(w, http.StatusInternalServerError, errJson)
 }

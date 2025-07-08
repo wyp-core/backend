@@ -20,3 +20,14 @@ type GetJobsFetchParam struct {
 	Lat      float64 `json:"lat"`
 	Lon      float64 `json:"lon"`
 }
+
+type SendOtpParam struct {
+	Phone       string `json:"phone"`
+	CountryCode string `json:"countryCode"`
+}
+
+type VerifyOtpParam struct {
+	Phone       string `json:"phone"`
+	CountryCode string `json:"countryCode"`
+	Otp         int `json:"otp"`
+}
