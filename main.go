@@ -11,11 +11,13 @@ import (
 
 	"github.com/Abhyuday04/wyp/handlers"
 	"github.com/Abhyuday04/wyp/infra/redis"
+	"github.com/Abhyuday04/wyp/infra/sms"
 	"github.com/Abhyuday04/wyp/internal/app"
 	repository "github.com/Abhyuday04/wyp/layers/repository"
 	"github.com/Abhyuday04/wyp/layers/services"
 	"github.com/Abhyuday04/wyp/layers/transport"
 	_ "github.com/lib/pq"
+	"github.com/twilio/twilio-go"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -29,9 +31,22 @@ const (
 	dbname   = "postgres"
 )
 
+const (
+	accountSid = "ACf5c3f52a851beff684f452dd78bd0332"
+    authToken = "507ff438005c12cab2fd92eb5f05b417"
+)
+
 var db *gorm.DB
+var tc *twilio.RestClient
 
 func main() {
+	// Initialize Twilio client
+	tc = twilio.NewRestClientWithParams(twilio.ClientParams{
+        Username: accountSid,
+        Password: authToken,
+    })
+
+
 	// Get port from environment or use default
 	var port string
 	if port == "" {
@@ -113,12 +128,14 @@ func main() {
 }
 
 func makeServerProvider() {
+	sms := sms.New(tc)
 	repository := repository.New(db)
-	services := services.New(repository)
+	services := services.New(repository, sms)
 	transport := transport.New(services)
 	app.Srv = app.Server{
 		Service:    services,
 		Transport:  transport,
 		Repository: repository,
+		SmsService: sms,
 	}
 }

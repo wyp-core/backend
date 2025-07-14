@@ -22,8 +22,8 @@ type GetJobsFetchParam struct {
 }
 
 type SendOtpParam struct {
-	Phone       string `json:"phone"`
-	CountryCode string `json:"countryCode"`
+	Phone       string `json:"phone" required:"true"`
+	CountryCode string `json:"countryCode" required:"true"`
 }
 
 type VerifyOtpParam struct {

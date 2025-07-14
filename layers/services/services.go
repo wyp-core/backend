@@ -4,18 +4,23 @@ import (
 	// "errors"
 
 	"context"
+	"errors"
 
+	"github.com/Abhyuday04/wyp/infra/sms"
 	"github.com/Abhyuday04/wyp/layers/models"
 	repository "github.com/Abhyuday04/wyp/layers/repository"
+	"github.com/rs/zerolog/log"
 )
 
 type Service struct {
 	repository repository.IRepository
+	smsService sms.ISms
 }
 
-func New(repository repository.IRepository) *Service {
+func New(repository repository.IRepository, smsService sms.ISms) *Service {
 	return &Service{
 		repository: repository,
+		smsService: smsService,
 	}
 }
 
@@ -61,6 +66,11 @@ func (s *Service) SendOtp(ctx context.Context, fetchParams *models.SendOtpParam)
 	err := otpStruct.GenerateOtp(ctx)
 	if err != nil {
 		return err
+	}
+	err = s.smsService.SendOtp(ctx, fetchParams.CountryCode, fetchParams.Phone, otpStruct.Otp)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to send OTP")
+		return errors.New("failed to send OTP: " + err.Error())
 	}
 	return nil
 }
