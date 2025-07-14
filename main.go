@@ -32,8 +32,8 @@ const (
 )
 
 const (
-	accountSid = ""
-    authToken = ""
+	accountSid = "ACf5c3f52a851beff684f452dd78bd0332"
+    authToken = "507ff438005c12cab2fd92eb5f05b417"
 )
 
 var db *gorm.DB
