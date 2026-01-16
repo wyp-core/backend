@@ -24,10 +24,10 @@ import (
 
 // TODO move to config file and refactor
 const (
-	user     = "postgres.xqjolmvnjxhlktqvjtrs"
-	password = "12345678"
-	host     = "aws-0-ap-south-1.pooler.supabase.com"
-	port_db  = 6543
+	user     = "postgres"
+	password = "S3koyrxyw6cX0Bg2"
+	host     = "db.yamqcuymzcblkkdskbvl.supabase.co"
+	port_db  = 5432
 	dbname   = "postgres"
 )
 
