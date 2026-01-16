@@ -25,7 +25,7 @@ import (
 // TODO move to config file and refactor
 const (
 	user     = "postgres"
-	password = "S3koyrxyw6cX0Bg2"
+	password = "U+h+AXWw5qRBDwk"
 	host     = "db.yamqcuymzcblkkdskbvl.supabase.co"
 	port_db  = 5432
 	dbname   = "postgres"
